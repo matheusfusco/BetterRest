@@ -27,8 +27,8 @@ struct ContentView : View {
                     .lineLimit(nil)
                 
                 Stepper(value: $sleepAmount, in: 4...12, step: 0.25) {
-                    Text("\(sleepAmount, specifier: "%g") hours")
-                }
+                    Text("\(sleepAmount, specifier: "%g") horas")
+                }.padding(.bottom)
                 
                 Text("Quantidade desejada de sono")
                     .font(.headline)
@@ -36,15 +36,20 @@ struct ContentView : View {
                 
                 Stepper(value: $coffeeAmount, in: 1...20, step: 1) {
                     if coffeeAmount == 1 {
-                        Text("1 cup")
+                        Text("1 xícara")
                     } else {
-                        Text("\(coffeeAmount) cups")
+                        Text("\(coffeeAmount) xícaras")
                     }
                 }
                 
                 Spacer()
             }
                 .navigationBarTitle(Text("Better Rest"))
+                .navigationBarItems(trailing: Button(action: {
+                    
+                }, label: {
+                    Text("Calcular")
+                }))
             .padding()
         }
     }
