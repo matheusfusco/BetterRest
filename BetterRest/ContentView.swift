@@ -9,8 +9,18 @@
 import SwiftUI
 
 struct ContentView : View {
+    @State private var wakeUp = Date()
+    
     var body: some View {
-        Text("Hello World")
+        NavigationView {
+            VStack {
+                Text("Quando você quer acordar?")
+                    .font(.headline)
+                    .lineLimit(nil)
+                
+                DatePicker($wakeUp, displayedComponents: .hourAndMinute)
+            }
+        }
     }
 }
 
