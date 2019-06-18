@@ -9,9 +9,20 @@
 import SwiftUI
 
 struct ContentView : View {
-    @State private var wakeUp = Date()
+    @State private var wakeUp = defaultWakeUpTime
     @State private var sleepAmount: Double = 8
     @State private var coffeeAmount: Int = 1
+    
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
+    @State private var showingAlert = false
+    
+    static var defaultWakeUpTime: Date {
+        var components = DateComponents()
+        components.hour = 8
+        components.minute = 0
+        return Calendar.current.date(from: components) ?? Date()
+    }
     
     var body: some View {
         NavigationView {
@@ -45,13 +56,39 @@ struct ContentView : View {
                 Spacer()
             }
                 .navigationBarTitle(Text("Better Rest"))
-                .navigationBarItems(trailing: Button(action: {
-                    
-                }, label: {
+                .navigationBarItems(trailing:
+                    Button(action: calculateBedTime) {
                     Text("Calcular")
-                }))
-            .padding()
+                })
+                .padding()
+                .presentation($showingAlert) {
+                    Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("Ok")))
+                }
         }
+    }
+    
+    func calculateBedTime() {
+        let model = SleepCalculator()
+        
+        do {
+            let components = Calendar.current.dateComponents([.hour, .minute], from: wakeUp)
+            let hour = (components.hour ?? 0) * 60 * 60
+            let minute = (components.minute ?? 0) * 60
+            
+            let prediction = try model.prediction(coffee: Double(coffeeAmount), estimatedSleep: sleepAmount, wake: Double(hour * minute))
+            
+            let formatter = DateFormatter()
+            formatter.timeStyle = .short
+            
+            let sleepTime = wakeUp - prediction.actualSleep
+            alertMessage = formatter.string(from: sleepTime)
+            alertTitle = "Sua hora ideal de ir para a cama é..."
+        } catch {
+            alertTitle = "Erro"
+            alertMessage = "Desculpe, houve um problema para calcular o tempo de sono."
+        }
+        
+        showingAlert = true
     }
 }
 
